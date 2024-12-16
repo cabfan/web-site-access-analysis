@@ -40,9 +40,38 @@ OPENAI_API_KEY=your_openai_api_key
 ```
 
 ## 项目结构
-- `src/`：前端源码。
-- `server/`：Node.js 后端源码，处理与 OpenAI 接口的交互。
-- `db/`：SQLite3 数据库文件存储。
+```bash
+PromptZen/
+├── client/                # 前端代码目录
+│   ├── public/            # 静态资源文件（如 favicon、全局图片等）
+│   ├── src/               # Vue3 源代码
+│   │   ├── assets/        # 静态资源，如图片、CSS、图标等
+│   │   ├── components/    # 通用组件（如按钮、卡片）
+│   │   ├── layouts/       # 页面布局组件（如 Header、Sidebar）
+│   │   ├── pages/         # 页面组件（如首页、设置页）
+│   │   ├── router/        # 路由配置
+│   │   ├── store/         # 状态管理（Pinia）
+│   │   ├── utils/         # 通用工具函数
+│   │   ├── App.vue        # Vue 根组件
+│   │   ├── main.js        # 应用入口文件
+│   │   └── vite.config.js # Vite 配置文件
+│   └── package.json       # 前端依赖
+│
+├── server/                # 后端代码目录
+│   ├── db/                # 数据库文件和初始化脚本
+│   │   ├── database.sqlite3  # SQLite 数据文件
+│   │   └── schema.sql        # 数据库表结构定义
+│   ├── routes/            # API 路由
+│   ├── utils/             # 通用工具（如变量替换工具）
+│   ├── app.js             # Express 应用入口
+│   ├── config.js          # 配置文件（如端口、API Key）
+│   ├── package.json       # 后端依赖
+│   └── .env               # 环境变量（如 API Key）
+│
+├── .gitignore             # Git 忽略文件
+├── README.md              # 项目说明文件
+└── LICENSE                # 许可证
+```
 
 ## License
 MIT License
