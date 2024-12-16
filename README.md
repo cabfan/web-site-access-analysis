@@ -21,3 +21,28 @@
 ```bash
 git clone https://github.com/yourusername/PromptZen.git
 cd PromptZen
+```
+
+### 2. 安装依赖
+```bash
+npm install
+```
+
+### 3. 启动开发环境
+```bash
+npm run dev
+```
+
+### 4. 配置 API Key
+在项目根目录下创建 .env 文件，并加入以下内容：
+```bash
+OPENAI_API_KEY=your_openai_api_key
+```
+
+## 项目结构
+- `src/`：前端源码。
+- `server/`：Node.js 后端源码，处理与 OpenAI 接口的交互。
+- `db/`：SQLite3 数据库文件存储。
+
+## License
+MIT License
