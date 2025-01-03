@@ -1,0 +1,50 @@
+mkdir web-site-access-analysis
+cd web-site-access-analysis
+mkdir frontend
+cd frontend
+npm create vite@latest . -- --template vue 
+npm install naive-ui
+npm install axios
+npm install pinia
+npm install vue-router
+npm install echarts
+npm install @vicons/ionicons5 
+mkdir -p src/assets src/components src/views/Dashboard src/views/Upload src/views/History src/router src/stores 
+cd ..
+mkdir backend
+cd backend
+mkdir -p logs database uploads src/controllers src/services/parser src/services/analyzer src/services/detector src/models src/routes src/utils
+touch .env
+cp .env.example .env
+npm install 
+touch src/routes/logs.js
+touch src/routes/analysis.js
+touch src/controllers/LogController.js
+touch src/controllers/AnalysisController.js
+touch src/services/parser/BaseParser.js
+touch src/services/parser/IISParser.js
+touch src/services/parser/NginxParser.js
+touch src/services/parser/LogParser.js
+touch src/services/analyzer/LogAnalyzer.js
+touch src/services/detector/SuspiciousDetector.js 
+
+# 后端依赖
+cd backend
+npm install
+
+# 前端依赖
+cd ../frontend
+npm install 
+
+cd ../backend
+cp .env.example .env 
+
+# 启动后端（在backend目录下）
+npm run dev
+
+# 新开一个终端，启动前端（在frontend目录下）
+cd ../frontend
+npm run dev 
+
+mkdir -p frontend/src/assets
+touch frontend/src/assets/main.css 

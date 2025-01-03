@@ -1,0 +1,24 @@
+{
+  "name": "web-site-access-analysis-frontend",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.3.4",
+    "naive-ui": "^2.34.4",
+    "axios": "^1.4.0",
+    "pinia": "^2.1.4",
+    "vue-router": "^4.2.4",
+    "echarts": "^5.4.3",
+    "@vicons/ionicons5": "^0.12.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "vite": "^4.4.0"
+  }
+} 
