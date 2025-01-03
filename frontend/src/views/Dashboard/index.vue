@@ -32,7 +32,7 @@
             <n-card class="stat-card">
               <n-statistic label="总请求量">
                 <template #prefix>
-                  <n-icon :component="StatsChartOutline" />
+                  <n-icon :component="SpeedometerOutline" />
                 </template>
                 <template #default>
                   <span>{{ formatNumber(statistics.totalRequests) }}</span>
@@ -240,7 +240,7 @@ import {
   WarningOutline,
   RefreshOutline,
   HelpCircleOutline,
-  StatsChartOutline
+  SpeedometerOutline
 } from '@vicons/ionicons5'
 import * as echarts from 'echarts'
 import { useAnalysisStore } from '@/stores/analysis'

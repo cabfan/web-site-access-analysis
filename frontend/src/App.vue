@@ -74,7 +74,7 @@ import {
   SunnyOutline,
   MoonOutline,
   SettingsOutline,
-  StatsChartOutline
+  SpeedometerOutline
 } from '@vicons/ionicons5'
 import { useStorage } from '@vueuse/core'
 
@@ -109,7 +109,7 @@ const menuOptions = [
   {
     label: '仪表盘',
     key: '/',
-    icon: renderIcon(StatsChartOutline)
+    icon: renderIcon(SpeedometerOutline)
   },
   {
     label: '上传日志',
