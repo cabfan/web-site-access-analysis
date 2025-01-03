@@ -78,7 +78,7 @@
               <n-space justify="end">
                 <n-button
                   type="primary"
-                  :loading="uploading"
+                  :loading="loading"
                   :disabled="!formData.serverIp || !formData.logDate"
                   @click="startUpload"
                 >
@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMessage } from 'naive-ui'
 import {
@@ -120,7 +120,9 @@ import {
   NInput,
   NDatePicker,
   NCheckbox,
-  NDivider
+  NDivider,
+  NAlert,
+  NCollapseTransition
 } from 'naive-ui'
 import {
   CloudUploadOutline,
@@ -135,7 +137,7 @@ const store = useAnalysisStore()
 const uploadRef = ref(null)
 const formRef = ref(null)
 const selectedFile = ref(null)
-const uploading = ref(false)
+const loading = ref(false)
 const mounted = ref(false)
 
 const formData = ref({
@@ -169,35 +171,44 @@ async function startUpload() {
   try {
     await formRef.value?.validate()
     
-    uploading.value = true
+    loading.value = true
     const formDataToSend = new FormData()
     formDataToSend.append('logFile', selectedFile.value.file)
     formDataToSend.append('serverIp', formData.value.serverIp)
     formDataToSend.append('logDate', formData.value.logDate)
     formDataToSend.append('isGMTTime', String(formData.value.isGMTTime))
 
-    const result = await store.uploadAndAnalyze(formDataToSend)
+    const response = await store.uploadAndAnalyze(formDataToSend)
     
-    if (result.success) {
-      message.success('分析完成')
-      // 等待一小段时间确保数据已经保存
-      await new Promise(resolve => setTimeout(resolve, 500))
-      router.push({
-        path: '/',
-        query: {
-          serverIp: formData.value.serverIp,
-          logDate: formData.value.logDate
-        }
-      })
-    } else {
-      message.error(result.error || '上传失败')
+    uploadStatus.value = {
+      show: true,
+      type: 'success',
+      title: '分析完成',
+      message: '日志分析已完成，即将跳转到仪表盘...'
     }
+
+    await nextTick()
+    
+    setTimeout(async () => {
+      try {
+        await router.push({
+          path: '/',
+          query: {
+            serverIp: formData.value.serverIp,
+            logDate: formData.value.logDate
+          }
+        })
+      } catch (error) {
+        console.error('Navigation error:', error)
+      }
+    }, 1500)
+
   } catch (error) {
     if (error?.type !== 'validate') {
       message.error(error.message || '上传失败')
     }
   } finally {
-    uploading.value = false
+    loading.value = false
   }
 }
 
@@ -209,6 +220,13 @@ function handleChange(options) {
 function clearFile() {
   selectedFile.value = null
   uploadRef.value?.clear()
+}
+
+function handleUpload({ file }) {
+  selectedFile.value = {
+    file,
+    name: file.name
+  }
 }
 
 // 确保组件挂载后再显示上传组件，避免 SSR 问题

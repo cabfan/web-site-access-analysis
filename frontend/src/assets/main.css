@@ -11,6 +11,12 @@
   
   --border-radius: 8px;
   --card-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  
+  /* 暗色主题变量 */
+  --dark-background: #101014;
+  --dark-text-color: #e5e5e5;
+  --dark-text-color-secondary: #999;
+  --dark-border-color: #333;
 }
 
 html, body {
@@ -23,6 +29,7 @@ html, body {
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 #app {
@@ -30,9 +37,32 @@ html, body {
   height: 100%;
 }
 
+/* 暗色主题样式 */
+[theme-name="dark"] body {
+  background-color: var(--dark-background) !important;
+  color: var(--dark-text-color) !important;
+}
+
+/* 导航栏样式 */
+.app-header {
+  background-color: var(--background-color);
+  transition: background-color 0.3s;
+}
+
+[theme-name="dark"] .app-header {
+  background-color: var(--dark-background) !important;
+  border-color: var(--dark-border-color) !important;
+}
+
+/* 卡片样式 */
 .n-card {
   border-radius: var(--border-radius) !important;
   box-shadow: var(--card-shadow) !important;
+}
+
+[theme-name="dark"] .n-card {
+  background-color: var(--dark-background) !important;
+  border-color: var(--dark-border-color) !important;
 }
 
 .page-container {
@@ -45,7 +75,7 @@ html, body {
   box-shadow: var(--card-shadow);
 }
 
-/* 美化滚动条样式 */
+/* 滚动条样式 */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -62,6 +92,14 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ccc;
+}
+
+[theme-name="dark"] ::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+[theme-name="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #888;
 }
 
 /* 当滚动条不需要时隐藏 */
