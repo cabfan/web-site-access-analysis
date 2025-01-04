@@ -235,6 +235,7 @@ function formatDateTime(date) {
 watch(() => props.show, async (newVal) => {
   if (newVal) {
     content.value = ''
+    showContent.value = false  // 打开对话框时也重置显示状态
     await fetchHistory()
   }
 })
@@ -243,6 +244,7 @@ watch(() => props.show, async (newVal) => {
 watch(() => analyzing.value, async (newVal, oldVal) => {
   if (oldVal && !newVal && content.value) {
     await saveAnalysis()
+    showContent.value = true  // 分析完成后显示内容
   }
 })
 
@@ -389,6 +391,8 @@ function handleStop() {
 }
 
 function handleClose() {
+  content.value = ''
+  showContent.value = false  // 重置显示状态
   emit('update:show', false)
 }
 
