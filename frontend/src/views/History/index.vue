@@ -172,9 +172,9 @@ const columns = [
   {
     title: '日志日期',
     key: 'log_date',
-    width: 120,
+    width: 180,
     render(row) {
-      return formatDate(row.log_date, 'YYYY-MM-DD')
+      return formatDate(row.log_date)
     }
   },
   {
@@ -281,9 +281,20 @@ function exportDetail() {
   // 实现导出逻辑
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  return new Date(dateStr).toLocaleString()
+function formatDate(date) {
+  if (!date) return '';
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return '';
+    
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}年${month}月${day}日`;
+  } catch (error) {
+    console.error('Date formatting error:', error);
+    return '';
+  }
 }
 
 function getTopItems(items = []) {
