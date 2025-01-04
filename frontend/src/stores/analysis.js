@@ -77,6 +77,7 @@ export const useAnalysisStore = defineStore('analysis', {
             totalRequests: 0,
             uniqueIps: 0,
             suspiciousRequests: 0,
+            logDate: null,
             details: {
               trends: [],
               statusCodeDist: {
@@ -102,6 +103,7 @@ export const useAnalysisStore = defineStore('analysis', {
           totalRequests: data.total_requests,
           uniqueIps: data.unique_ips,
           suspiciousRequests: data.suspicious_requests,
+          logDate: data.log_date,
           details: {
             ...details,
             // 确保所有必需的字段都存在

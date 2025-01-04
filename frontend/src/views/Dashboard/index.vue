@@ -12,17 +12,36 @@
                 style="width: 200px"
                 @update:value="refreshData"
               />
-              <n-text depth="2" v-if="statistics.value?.logDate || statistics.logDate">
-                数据统计于 {{ formatDate(statistics.value?.logDate || statistics.logDate) }}
+              <n-text depth="2" v-if="statistics.logDate">
+                数据统计于 {{ formatDate(statistics.logDate) }}
               </n-text>
             </n-space>
-            <n-button
-              type="primary"
-              @click="refreshData"
-              :loading="loading"
-            >
-              刷新数据
-            </n-button>
+            <n-space>
+              <n-button
+                type="primary"
+                @click="refreshData"
+                :loading="loading"
+              >
+                <template #icon>
+                  <n-icon>
+                    <refresh-outline />
+                  </n-icon>
+                </template>
+                刷新数据
+              </n-button>
+              <n-button
+                type="info"
+                @click="analyzeWithAI"
+                :loading="analyzing"
+              >
+                <template #icon>
+                  <n-icon>
+                    <prism-outline />
+                  </n-icon>
+                </template>
+                AI分析
+              </n-button>
+            </n-space>
           </n-space>
         </n-card>
 
@@ -209,6 +228,16 @@
       v-model:show="showSuspiciousRequests"
       :requests="statistics.details?.suspiciousRequests"
     />
+
+    <AIAnalysisDialog
+      :show="showAIAnalysis"
+      @update:show="showAIAnalysis = $event"
+      :data="{
+        serverIp: selectedServer,
+        logDate: statistics.logDate,
+        ...statistics
+      }"
+    />
   </div>
 </template>
 
@@ -222,38 +251,36 @@ import {
   NIcon,
   NSpace,
   NButton,
-  NDataTable,
-  NNumberAnimation,
   NTooltip,
   NTag,
-  NModal,
   NList,
   NListItem,
   NThing,
   NScrollbar,
   NSelect,
-  NDatePicker
+  useMessage
 } from 'naive-ui'
 import { 
-  AnalyticsOutline, 
   PeopleOutline, 
   WarningOutline,
   RefreshOutline,
   HelpCircleOutline,
-  SpeedometerOutline
+  SpeedometerOutline,
+  PrismOutline
 } from '@vicons/ionicons5'
-import * as echarts from 'echarts'
 import { useAnalysisStore } from '@/stores/analysis'
 import SuspiciousRequestsDialog from './SuspiciousRequestsDialog.vue'
 import { useRoute } from 'vue-router'
 import TrendChart from './components/TrendChart.vue'
 import StatusChart from './components/StatusChart.vue'
+import AIAnalysisDialog from './AIAnalysisDialog.vue'
 
 const statistics = ref({
   totalRequests: 0,
   uniqueIps: 0,
   suspiciousRequests: 0,
   fileName: '',
+  logDate: null,
   details: {
     trends: [],
     statusCodeDist: {},
@@ -264,46 +291,9 @@ const statistics = ref({
   }
 })
 
-const showSuspiciousModal = ref(false)
 const showSuspiciousRequests = ref(false)
 const loading = ref(false)
 const store = useAnalysisStore()
-
-const topIps = ref([])
-const requestTrendChart = ref(null)
-const statusCodeChart = ref(null)
-const trendChartInstance = ref(null)
-const statusChartInstance = ref(null)
-
-const ipColumns = [
-  {
-    title: 'IP地址',
-    key: 'ip'
-  },
-  {
-    title: '请求次数',
-    key: 'count'
-  },
-  {
-    title: '最后访问时间',
-    key: 'lastAccess'
-  },
-  {
-    title: '状态',
-    key: 'status',
-    render(row) {
-      return h(
-        NTag,
-        {
-          type: row.isSuspicious ? 'error' : 'success',
-          round: true,
-          size: 'small'
-        },
-        { default: () => row.isSuspicious ? '可疑' : '正常' }
-      )
-    }
-  }
-]
 
 // 添加状态码图例数据
 const statusLegend = ref([])
@@ -319,7 +309,6 @@ const formatNumber = (num) => {
 
 const route = useRoute()
 const selectedServer = ref(null)
-const selectedDate = ref(null)
 const serverOptions = ref([])
 
 // 获取服务器列表
@@ -354,12 +343,13 @@ async function refreshData() {
       serverIp: selectedServer.value
     };
     const data = await store.getStatistics(params);
-    
+
     if (mounted.value && data) {
       statistics.value = {
         ...data,
-        logDate: data.logDate  // 确保 logDate 被正确设置
+        logDate: data.logDate
       };
+      console.log('Updated statistics:', statistics.value);
     }
   } catch (error) {
     console.error('Failed to refresh data:', error);
@@ -391,15 +381,6 @@ onUnmounted(() => {
   mounted.value = false
 })
 
-function handleResize() {
-  if (trendChartInstance.value) {
-    trendChartInstance.value.resize()
-  }
-  if (statusChartInstance.value) {
-    statusChartInstance.value.resize()
-  }
-}
-
 // 辅助函数：获取类别名称
 function getCategoryName(category) {
   const categoryNames = {
@@ -413,18 +394,6 @@ function getCategoryName(category) {
   return categoryNames[category] || category
 }
 
-// 辅助函数：获取类别颜色
-function getCategoryColor(category) {
-  const categoryColors = {
-    success: '#18a058',
-    redirect: '#2080f0',
-    client_error: '#f0a020',
-    server_error: '#d03050',
-    cached: '#8f8f8f',
-    other: '#909399'
-  }
-  return categoryColors[category] || '#909399'
-}
 
 // 添加日期格式化函数
 function formatDate(date) {
@@ -442,6 +411,30 @@ function formatDate(date) {
     return '';
   }
 }
+
+// 添加 AI 分析相关的状态
+const analyzing = ref(false)
+
+const showAIAnalysis = ref(false)
+
+// 添加 message 实例
+const message = useMessage()
+
+// 修改 AI 分析方法
+async function analyzeWithAI() {
+  console.log('analyzeWithAI data:', {
+    serverIp: selectedServer.value,
+    logDate: statistics.value.logDate,
+    ...statistics.value
+  })
+  
+  if (!statistics.value?.details) {
+    message.warning('请先获取数据后再进行 AI 分析')
+    return
+  }
+  showAIAnalysis.value = true
+}
+
 </script>
 
 <style scoped>
@@ -606,5 +599,14 @@ function formatDate(date) {
 
 [theme-name="dark"] .percent {
   color: #999;
+}
+
+.filter-card :deep(.n-button) {
+  display: flex;
+  align-items: center;
+}
+
+.filter-card :deep(.n-button .n-icon) {
+  margin-right: 4px;
 }
 </style> 

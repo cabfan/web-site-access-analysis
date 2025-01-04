@@ -48,6 +48,10 @@ const upload = multer({
 app.use('/api/logs', require('./routes/logs'));
 app.use('/api/analysis', require('./routes/analysis'));
 
+// 添加新的路由
+const aiAnalysisRouter = require('./routes/aiAnalysis');
+app.use('/api', aiAnalysisRouter);
+
 // 错误处理
 app.use(errorHandler);
 
