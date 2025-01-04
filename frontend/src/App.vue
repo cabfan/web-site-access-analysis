@@ -32,7 +32,7 @@
                       </n-icon>
                     </template>
                   </n-button>
-                  <n-button quaternary circle>
+                  <n-button quaternary circle @click="router.push('/settings')">
                     <template #icon>
                       <n-icon size="18">
                         <settings-outline />

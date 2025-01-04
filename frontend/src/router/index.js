@@ -1,26 +1,27 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Dashboard from '@/views/Dashboard/index.vue'
+import Upload from '@/views/Upload/index.vue'
+import History from '@/views/History/index.vue'
+import Settings from '@/views/Settings/index.vue'
 
-const routes = [
-  {
-    path: '/',
-    name: 'Dashboard',
-    component: () => import('@/views/Dashboard/index.vue')
-  },
-  {
-    path: '/upload',
-    name: 'Upload',
-    component: () => import('@/views/Upload/index.vue')
-  },
-  {
-    path: '/history',
-    name: 'History',
-    component: () => import('@/views/History/index.vue')
-  }
-]
-
-const router = createRouter({
+export default createRouter({
   history: createWebHistory(),
-  routes
-})
-
-export default router 
+  routes: [
+    {
+      path: '/',
+      component: Dashboard
+    },
+    {
+      path: '/upload',
+      component: Upload
+    },
+    {
+      path: '/history',
+      component: History
+    },
+    {
+      path: '/settings',
+      component: Settings
+    }
+  ]
+}) 
